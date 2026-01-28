@@ -1,10 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Lock, User, Phone } from 'lucide-react';
+import { Mail, Lock, User, Phone, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+
+declare global {
+  interface Window {
+    daum: any;
+  }
+}
 
 export default function SignupPage() {
   const router = useRouter();
@@ -14,9 +20,54 @@ export default function SignupPage() {
     passwordConfirm: '',
     name: '',
     phone: '',
+    address: '',
+    addressDetail: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // 다음 우편번호 API 스크립트 로드
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleAddressSearch = () => {
+    if (!window.daum) {
+      alert('주소 검색 API를 로드하는 중입니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
+    new window.daum.Postcode({
+      oncomplete: function (data: any) {
+        let fullAddress = data.address;
+        let extraAddress = '';
+
+        if (data.addressType === 'R') {
+          if (data.bname !== '') {
+            extraAddress += data.bname;
+          }
+          if (data.buildingName !== '') {
+            extraAddress += extraAddress !== '' ? ', ' + data.buildingName : data.buildingName;
+          }
+          fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
+        }
+
+        setFormData((prev) => ({
+          ...prev,
+          address: fullAddress,
+        }));
+
+        // 상세주소 입력 포커스
+        document.getElementById('addressDetail')?.focus();
+      },
+    }).open();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,11 +107,16 @@ export default function SignupPage() {
 
       if (data.user) {
         // 프로필 업데이트
+        const fullAddress = formData.address
+          ? `${formData.address}${formData.addressDetail ? ' ' + formData.addressDetail : ''}`
+          : '';
+
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
             name: formData.name,
             phone: formData.phone,
+            default_address: fullAddress || null,
           })
           .eq('id', data.user.id);
 
@@ -112,7 +168,7 @@ export default function SignupPage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                   placeholder="example@email.com"
                 />
               </div>
@@ -131,7 +187,7 @@ export default function SignupPage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                   placeholder="홍길동"
                 />
               </div>
@@ -149,9 +205,48 @@ export default function SignupPage() {
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                   placeholder="010-1234-5678"
                 />
+              </div>
+            </div>
+
+            {/* 주소 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                주소 (선택)
+              </label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      readOnly
+                      value={formData.address}
+                      placeholder="주소 검색"
+                      className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 cursor-pointer"
+                      onClick={handleAddressSearch}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddressSearch}
+                    className="px-4 py-3 bg-gray-700 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors whitespace-nowrap"
+                  >
+                    주소 검색
+                  </button>
+                </div>
+                {formData.address && (
+                  <input
+                    type="text"
+                    id="addressDetail"
+                    value={formData.addressDetail}
+                    onChange={(e) => setFormData({ ...formData, addressDetail: e.target.value })}
+                    placeholder="상세주소 (동/호수)"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                  />
+                )}
               </div>
             </div>
 
@@ -168,7 +263,7 @@ export default function SignupPage() {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                   placeholder="최소 6자 이상"
                 />
               </div>
@@ -187,7 +282,7 @@ export default function SignupPage() {
                   required
                   value={formData.passwordConfirm}
                   onChange={(e) => setFormData({ ...formData, passwordConfirm: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                   placeholder="비밀번호를 다시 입력하세요"
                 />
               </div>

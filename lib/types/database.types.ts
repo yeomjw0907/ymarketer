@@ -58,3 +58,16 @@ export type PriceCalculation = {
   final_price: number;     // 최종 가격
   saved_amount: number;    // 절약 금액
 };
+
+export type HeroBannerItem = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  sort_order: number;
+  image_url: string;
+  title: string | null;
+  subtitle: string | null;
+  link_url: string | null;
+  bg_color: string | null;
+  is_active: boolean;
+};

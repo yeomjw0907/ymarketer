@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,19 +10,22 @@ export async function POST(request: NextRequest) {
       customer_phone,
       address,
       customer_memo,
+      quantity,
       final_price,
     } = body;
 
     // 유효성 검사
-    if (!product_id || !customer_name || !customer_phone || !address || !final_price) {
+    if (!product_id || !customer_name || !customer_phone || !address || !final_price || !quantity) {
       return NextResponse.json(
         { error: '필수 정보가 누락되었습니다.' },
         { status: 400 }
       );
     }
 
+    const supabase = createSupabaseServerClient();
+
     // 주문 생성
-    const { data, error } = await supabaseServer
+    const { data, error } = await supabase
       .from('orders')
       .insert({
         product_id,
@@ -30,6 +33,7 @@ export async function POST(request: NextRequest) {
         customer_phone,
         address,
         customer_memo: customer_memo || null,
+        quantity: parseInt(quantity, 10),
         final_price,
         status: 'pending',
       })

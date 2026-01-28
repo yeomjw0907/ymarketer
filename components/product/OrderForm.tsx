@@ -10,6 +10,7 @@ interface OrderFormProps {
 }
 
 export default function OrderForm({ productId, productName, finalPrice }: OrderFormProps) {
+  const [quantity, setQuantity] = useState(1);
   const [formData, setFormData] = useState({
     customerName: '',
     customerPhone: '',
@@ -18,6 +19,8 @@ export default function OrderForm({ productId, productName, finalPrice }: OrderF
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const totalPrice = finalPrice * quantity;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +38,8 @@ export default function OrderForm({ productId, productName, finalPrice }: OrderF
           customer_phone: formData.customerPhone,
           address: formData.address,
           customer_memo: formData.customerMemo,
-          final_price: finalPrice,
+          quantity,
+          final_price: totalPrice,
         }),
       });
 
@@ -99,7 +103,37 @@ export default function OrderForm({ productId, productName, finalPrice }: OrderF
         {/* 주문 상품 정보 */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="text-sm text-blue-700 font-medium mb-1">주문 상품</div>
-          <div className="font-bold text-gray-900">{productName}</div>
+          <div className="font-bold text-gray-900 mb-3">{productName}</div>
+          
+          {/* 수량 선택 */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">수량</span>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-8 h-8 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-bold"
+              >
+                -
+              </button>
+              <span className="w-12 text-center font-bold text-gray-900">{quantity}</span>
+              <button
+                type="button"
+                onClick={() => setQuantity(Math.min(99, quantity + 1))}
+                className="w-8 h-8 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-bold"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          
+          {/* 총 금액 */}
+          <div className="mt-3 pt-3 border-t border-blue-200 flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">총 결제 금액</span>
+            <span className="text-lg font-bold text-blue-600">
+              {totalPrice.toLocaleString()}원
+            </span>
+          </div>
         </div>
 
         {/* 이름 */}
@@ -113,7 +147,7 @@ export default function OrderForm({ productId, productName, finalPrice }: OrderF
             required
             value={formData.customerName}
             onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
             placeholder="홍길동"
           />
         </div>
@@ -129,7 +163,7 @@ export default function OrderForm({ productId, productName, finalPrice }: OrderF
             required
             value={formData.customerPhone}
             onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
             placeholder="010-1234-5678"
           />
         </div>
@@ -145,8 +179,8 @@ export default function OrderForm({ productId, productName, finalPrice }: OrderF
             rows={3}
             value={formData.address}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-            placeholder="서울특별시 강남구 테헤란로 123&#10;(상세주소 포함)"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900 placeholder:text-gray-400"
+            placeholder="서울특별시 강남구 테헤란로 123 (상세주소 포함)"
           />
         </div>
 
@@ -160,7 +194,7 @@ export default function OrderForm({ productId, productName, finalPrice }: OrderF
             rows={2}
             value={formData.customerMemo}
             onChange={(e) => setFormData({ ...formData, customerMemo: e.target.value })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900 placeholder:text-gray-400"
             placeholder="배송 시 요청사항이 있으시면 입력해주세요."
           />
         </div>

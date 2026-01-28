@@ -1,8 +1,8 @@
+import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
 
-// Supabase Server Client (Server-side)
-// For use in Server Components and Server Actions
-// Uses service role key for admin operations
+// Supabase Admin Client (with service role key)
 export const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -14,8 +14,37 @@ export const supabaseAdmin = createClient(
   }
 );
 
-// Regular server client (with anon key)
-export const supabaseServer = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// Supabase Server Client factory function (use this in Server Components)
+export function createSupabaseServerClient() {
+  const cookieStore = cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: any) {
+          try {
+            cookieStore.set(name, value, options);
+          } catch {
+            // Called from Server Component, ignore
+          }
+        },
+        remove(name: string, options: any) {
+          try {
+            cookieStore.set(name, '', options);
+          } catch {
+            // Called from Server Component, ignore
+          }
+        },
+      },
+    }
+  );
+}
+
+// Legacy export - creates client on each access
+// NOTE: Each page should call createSupabaseServerClient() directly for proper auth
+export const supabaseServer = createSupabaseServerClient();

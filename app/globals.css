@@ -67,3 +67,13 @@ body {
 * {
   @apply transition-colors duration-150;
 }
+
+/* 입력 폼 텍스트 가독성: 타이핑 시 진한 색상 */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea {
+  @apply text-gray-900;
+}
+input::placeholder,
+textarea::placeholder {
+  @apply text-gray-400;
+}

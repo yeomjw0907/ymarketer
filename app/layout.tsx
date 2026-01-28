@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 
 export const metadata: Metadata = {
   title: "ymarketer | 일본 직구 가격 비교",
@@ -18,10 +20,13 @@ export default function RootLayout({
     <html lang="ko">
       <body className="antialiased min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 pb-16 lg:pb-0">
           {children}
         </main>
         <Footer />
+        <Suspense fallback={null}>
+          <MobileBottomNav />
+        </Suspense>
       </body>
     </html>
   );

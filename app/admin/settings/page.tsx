@@ -127,7 +127,7 @@ export default function AdminSettingsPage() {
                     onChange={(e) =>
                       setSettings({ ...settings, yen_rate: Number(e.target.value) })
                     }
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-bold"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-bold text-gray-900"
                   />
                   <button
                     onClick={() => handleSave('yen_rate', settings.yen_rate)}
@@ -159,7 +159,7 @@ export default function AdminSettingsPage() {
                     onChange={(e) =>
                       setSettings({ ...settings, shipping_base: Number(e.target.value) })
                     }
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   />
                   <span className="flex items-center text-gray-600">원</span>
                 </div>
@@ -178,7 +178,7 @@ export default function AdminSettingsPage() {
                         shipping_per_half_kg: Number(e.target.value),
                       })
                     }
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   />
                   <span className="flex items-center text-gray-600">원</span>
                 </div>
@@ -206,7 +206,7 @@ export default function AdminSettingsPage() {
                     onChange={(e) =>
                       setSettings({ ...settings, tax_threshold: Number(e.target.value) })
                     }
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   />
                   <span className="flex items-center text-gray-600">원</span>
                 </div>
@@ -226,7 +226,7 @@ export default function AdminSettingsPage() {
                     onChange={(e) =>
                       setSettings({ ...settings, tax_rate: Number(e.target.value) })
                     }
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   />
                   <span className="flex items-center text-gray-600">
                     ({(settings.tax_rate * 100).toFixed(0)}%)
@@ -254,7 +254,7 @@ export default function AdminSettingsPage() {
                   onChange={(e) =>
                     setSettings({ ...settings, fee_rate: Number(e.target.value) })
                   }
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 />
                 <span className="flex items-center text-gray-600">
                   ({(settings.fee_rate * 100).toFixed(0)}%)

@@ -152,7 +152,7 @@ export default function ReviewForm({ productId, onSuccess }: ReviewFormProps) {
           required
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
           placeholder="리뷰 제목을 입력하세요"
         />
       </div>
@@ -168,7 +168,7 @@ export default function ReviewForm({ productId, onSuccess }: ReviewFormProps) {
           rows={5}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 placeholder:text-gray-400"
           placeholder="상품에 대한 솔직한 후기를 작성해주세요"
         />
       </div>

@@ -43,10 +43,17 @@ export default async function HomePage({
   // 신상품 (최근 등록순)
   const newProducts = products?.slice(0, 8) || [];
 
+  // 히어로 롤링 배너 (DB에서 노출 중인 것만)
+  const { data: heroBanners } = await supabaseServer
+    .from('hero_banners')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true });
+
   return (
     <div className="min-h-screen bg-white">
-      {/* 히어로 배너 (롤링) */}
-      <HeroBanner />
+      {/* 히어로 배너 (롤링) - DB 데이터 또는 기본 배너 */}
+      <HeroBanner banners={heroBanners ?? undefined} />
 
       {/* 카테고리 섹션 */}
       <CategorySection />

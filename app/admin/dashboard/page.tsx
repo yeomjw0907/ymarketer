@@ -5,7 +5,7 @@ import {
   Package,
   ShoppingCart,
   Settings,
-  TrendingUp,
+  ImagePlus,
   Users,
   DollarSign,
 } from 'lucide-react';
@@ -155,6 +155,22 @@ export default async function AdminDashboardPage() {
             </div>
             <p className="text-sm text-gray-600">
               주문 내역 확인 및 상태 변경
+            </p>
+          </Link>
+
+          {/* 히어로 배너 관리 */}
+          <Link
+            href="/admin/banners"
+            className="bg-white rounded-xl border-2 border-gray-200 p-6 hover:border-amber-300 hover:shadow-lg transition-all group"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="bg-amber-100 p-3 rounded-lg group-hover:bg-amber-200 transition-colors">
+                <ImagePlus className="w-6 h-6 text-amber-600" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900">히어로 배너</h3>
+            </div>
+            <p className="text-sm text-gray-600">
+              메인 페이지 롤링 배너 등록·수정·삭제
             </p>
           </Link>
 
