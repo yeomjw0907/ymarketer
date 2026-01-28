@@ -32,7 +32,8 @@ export default function AdminLoginPage() {
       }
 
       if (data.user) {
-        // 전체 페이지 리로드로 인증 상태 확실히 전파
+        // 쿠키 저장 대기 후 리다이렉트 (SSR 인증 전파)
+        await new Promise((resolve) => setTimeout(resolve, 500));
         window.location.href = '/admin/dashboard';
       }
     } catch (err) {

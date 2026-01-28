@@ -53,6 +53,14 @@ export default function ShippingAddressModal({
     e.preventDefault();
     setIsSaving(true);
     try {
+      // 세션 확인
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        alert('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+        window.location.href = '/login';
+        return;
+      }
+
       const fullAddress = formData.address.trim();
       const { error } = await supabase
         .from('profiles')
@@ -63,12 +71,16 @@ export default function ShippingAddressModal({
         })
         .eq('id', userId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile update error:', error);
+        throw error;
+      }
+      
       onSave(formData);
       onClose();
-    } catch (err) {
-      console.error(err);
-      alert('저장 중 오류가 발생했습니다.');
+    } catch (err: any) {
+      console.error('ShippingAddressModal error:', err);
+      alert(err.message || '저장 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setIsSaving(false);
     }

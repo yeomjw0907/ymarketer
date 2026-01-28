@@ -97,6 +97,20 @@ export default function SignupPage() {
       }
 
       if (data.user) {
+        // 세션 확인 대기 (쿠키 저장 시간 보장)
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // 세션 확인
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.error('Session not found after signup');
+          setError('회원가입에 성공했지만 프로필 저장에 실패했습니다. 로그인 후 마이페이지에서 정보를 입력해주세요.');
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          router.push(loginUrl);
+          return;
+        }
+
         // 프로필 업데이트
         const fullAddress = formData.address
           ? `${formData.address}${formData.addressDetail ? ' ' + formData.addressDetail : ''}`
@@ -105,18 +119,20 @@ export default function SignupPage() {
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
-            name: formData.name,
-            phone: formData.phone,
+            name: formData.name.trim() || null,
+            phone: formData.phone.trim() || null,
             default_address: fullAddress || null,
           })
           .eq('id', data.user.id);
 
         if (profileError) {
           console.error('Profile update error:', profileError);
+          setError('프로필 정보 저장에 실패했습니다. 로그인 후 마이페이지에서 정보를 입력해주세요.');
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+        } else {
+          alert('회원가입이 완료되었습니다! 로그인해주세요.');
         }
 
-        // 회원가입 성공
-        alert('회원가입이 완료되었습니다! 로그인해주세요.');
         router.push(loginUrl);
       }
     } catch (err) {
