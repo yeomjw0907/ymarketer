@@ -37,7 +37,6 @@ export default function MobileMenu() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
     setIsOpen(false);
     router.push('/auth');
   };
