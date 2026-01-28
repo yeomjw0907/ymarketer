@@ -2,13 +2,15 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Heart } from 'lucide-react';
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getGlobalSettings } from '@/lib/utils/settings';
 import { calculatePrice, formatKRW } from '@/lib/utils/calculator';
 
 export default async function FavoritesPage() {
+  const supabase = createSupabaseServerClient();
+  
   // 인증 확인
-  const { data: { user } } = await supabaseServer.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
     redirect('/login?redirect=/favorites');
@@ -17,7 +19,7 @@ export default async function FavoritesPage() {
   const settings = await getGlobalSettings();
 
   // 찜한 상품 목록 가져오기
-  const { data: favorites } = await supabaseServer
+  const { data: favorites } = await supabase
     .from('favorites')
     .select(`
       id,

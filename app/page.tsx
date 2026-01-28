@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getGlobalSettings } from '@/lib/utils/settings';
 import { calculatePrice, formatKRW } from '@/lib/utils/calculator';
 import { Product } from '@/lib/types/database.types';
@@ -14,13 +14,15 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
+  const supabase = createSupabaseServerClient();
+  
   // Next.js 15: searchParams는 Promise로 감싸져 있어서 await 필요
   const params = await searchParams;
   const category = params.category || 'all';
   const settings = await getGlobalSettings();
 
   // 상품 목록 가져오기
-  let query = supabaseServer
+  let query = supabase
     .from('products')
     .select('*')
     .eq('is_active', true)
@@ -44,7 +46,7 @@ export default async function HomePage({
   const newProducts = products?.slice(0, 8) || [];
 
   // 히어로 롤링 배너 (DB에서 노출 중인 것만)
-  const { data: heroBanners } = await supabaseServer
+  const { data: heroBanners } = await supabase
     .from('hero_banners')
     .select('*')
     .eq('is_active', true)

@@ -9,13 +9,15 @@ import {
   Users,
   DollarSign,
 } from 'lucide-react';
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getGlobalSettings, getYenRate } from '@/lib/utils/settings';
 import { formatKRW } from '@/lib/utils/calculator';
 
 export default async function AdminDashboardPage() {
+  const supabase = createSupabaseServerClient();
+  
   // 인증 확인
-  const { data: { user } } = await supabaseServer.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
     redirect('/admin');
@@ -23,8 +25,8 @@ export default async function AdminDashboardPage() {
 
   // 대시보드 통계 가져오기
   const [productsResult, ordersResult] = await Promise.all([
-    supabaseServer.from('products').select('id', { count: 'exact' }),
-    supabaseServer.from('orders').select('id, status, final_price', { count: 'exact' }),
+    supabase.from('products').select('id', { count: 'exact' }),
+    supabase.from('orders').select('id, status, final_price', { count: 'exact' }),
   ]);
 
   const totalProducts = productsResult.count || 0;

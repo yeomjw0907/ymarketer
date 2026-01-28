@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Package, Truck, Shield } from 'lucide-react';
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getGlobalSettings } from '@/lib/utils/settings';
 import { calculatePrice, formatKRW, formatJPY } from '@/lib/utils/calculator';
 import PriceComparisonPanel from '@/components/product/PriceComparisonPanel';
@@ -14,11 +14,13 @@ export default async function ProductDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const supabase = createSupabaseServerClient();
+  
   // Next.js 15: params는 Promise로 감싸져 있어서 await 필요
   const { id } = await params;
 
   // 상품 정보 가져오기
-  const { data: product, error } = await supabaseServer
+  const { data: product, error } = await supabase
     .from('products')
     .select('*')
     .eq('id', id)

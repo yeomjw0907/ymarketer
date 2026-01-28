@@ -1,15 +1,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getGlobalSettings } from '@/lib/utils/settings';
 import { calculatePrice, formatKRW } from '@/lib/utils/calculator';
 import { Product } from '@/lib/types/database.types';
 
 export default async function HotDealsPage() {
+  const supabase = createSupabaseServerClient();
   const settings = await getGlobalSettings();
 
   // 모든 활성 상품 가져오기
-  const { data: products } = await supabaseServer
+  const { data: products } = await supabase
     .from('products')
     .select('*')
     .eq('is_active', true)

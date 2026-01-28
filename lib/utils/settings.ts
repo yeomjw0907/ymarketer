@@ -1,4 +1,4 @@
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { GlobalSettings } from '@/lib/types/database.types';
 
 /**
@@ -6,7 +6,9 @@ import { GlobalSettings } from '@/lib/types/database.types';
  * Server Component나 Server Action에서 사용
  */
 export async function getGlobalSettings(): Promise<GlobalSettings> {
-  const { data, error } = await supabaseServer
+  const supabase = createSupabaseServerClient();
+  
+  const { data, error } = await supabase
     .from('global_settings')
     .select('key, value');
 
@@ -33,10 +35,12 @@ export async function getGlobalSettings(): Promise<GlobalSettings> {
 }
 
 /**
- * 엔화 환율만 가져오기 (클라이언트에서도 사용 가능)
+ * 엔화 환율만 가져오기
  */
 export async function getYenRate(): Promise<number> {
-  const { data, error } = await supabaseServer
+  const supabase = createSupabaseServerClient();
+  
+  const { data, error } = await supabase
     .from('global_settings')
     .select('value')
     .eq('key', 'yen_rate')

@@ -116,16 +116,10 @@ export default function AdminLoginPage() {
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 rounded-lg transition-colors"
             >
-              {isLoading ? '로그인 중...' : '로그인'}
-            </button>
-          </form>
-
-          {/* 안내 */}
-          <div className="mt-6 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
-            <p>관리자 계정이 필요하신가요?</p>
-            <p className="mt-1">Supabase 대시보드에서 사용자를 생성해주세요.</p>
-          </div>
-        </div>
+            {isLoading ? '로그인 중...' : '로그인'}
+          </button>
+        </form>
+      </div>
 
         {/* 메인으로 돌아가기 */}
         <div className="text-center mt-6">

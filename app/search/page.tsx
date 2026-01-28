@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search } from 'lucide-react';
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getGlobalSettings } from '@/lib/utils/settings';
 import { calculatePrice, formatKRW } from '@/lib/utils/calculator';
 
@@ -10,13 +10,15 @@ export default async function SearchPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
+  const supabase = createSupabaseServerClient();
+  
   const params = await searchParams;
   const query = params.q || '';
   const settings = await getGlobalSettings();
 
   let products = [];
   if (query.trim()) {
-    const { data } = await supabaseServer
+    const { data } = await supabase
       .from('products')
       .select('*')
       .eq('is_active', true)

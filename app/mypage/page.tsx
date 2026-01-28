@@ -1,19 +1,21 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { User, Heart, ShoppingCart, Settings, LogOut } from 'lucide-react';
-import { supabaseServer } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import LogoutButton from '@/components/mypage/LogoutButton';
 
 export default async function MyPage() {
+  const supabase = createSupabaseServerClient();
+  
   // 인증 확인
-  const { data: { user } } = await supabaseServer.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
     redirect('/login?redirect=/mypage');
   }
 
   // 프로필 정보
-  const { data: profile } = await supabaseServer
+  const { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
@@ -21,8 +23,8 @@ export default async function MyPage() {
 
   // 통계 가져오기
   const [ordersResult, favoritesResult] = await Promise.all([
-    supabaseServer.from('orders').select('id', { count: 'exact' }).eq('customer_phone', profile?.phone || ''),
-    supabaseServer.from('favorites').select('id', { count: 'exact' }).eq('user_id', user.id),
+    supabase.from('orders').select('id', { count: 'exact' }).eq('customer_phone', profile?.phone || ''),
+    supabase.from('favorites').select('id', { count: 'exact' }).eq('user_id', user.id),
   ]);
 
   const orderCount = ordersResult.count || 0;
