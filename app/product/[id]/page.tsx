@@ -7,6 +7,7 @@ import { getGlobalSettings } from '@/lib/utils/settings';
 import { calculatePrice, formatKRW, formatJPY } from '@/lib/utils/calculator';
 import PriceComparisonPanel from '@/components/product/PriceComparisonPanel';
 import OrderForm from '@/components/product/OrderForm';
+import ReviewSection from '@/components/product/ReviewSection';
 
 export default async function ProductDetailPage({
   params,
@@ -168,6 +169,9 @@ export default async function ProductDetailPage({
             finalPrice={calculation.final_price}
           />
         </div>
+
+        {/* 리뷰 섹션 */}
+        <ReviewSection productId={product.id} />
 
         {/* 하단 Sticky CTA (모바일) */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur border-t border-gray-200 z-50">

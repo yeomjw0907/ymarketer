@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col items-center space-y-4 text-center">
           {/* 로고 */}
-          <div className="text-lg font-bold text-gray-900">Price Check</div>
+          <div className="text-lg font-bold text-gray-900">ymarketer</div>
           
           {/* 설명 */}
           <p className="text-sm text-gray-600 max-w-md">

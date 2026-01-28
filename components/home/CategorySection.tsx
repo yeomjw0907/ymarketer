@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { Tent, GolfBall, Shirt, Sparkles, Smartphone, TrendingUp } from 'lucide-react';
+import { Tent, Award, Shirt, Sparkles, Smartphone, TrendingUp } from 'lucide-react';
 
 const CATEGORIES = [
   { id: 'all', name: '전체', icon: TrendingUp, href: '/?category=all' },
   { id: 'camping', name: '캠핑', icon: Tent, href: '/?category=camping' },
-  { id: 'golf', name: '골프', icon: GolfBall, href: '/?category=golf' },
+  { id: 'golf', name: '골프', icon: Award, href: '/?category=golf' },
   { id: 'fashion', name: '패션', icon: Shirt, href: '/?category=fashion' },
   { id: 'beauty', name: '뷰티', icon: Sparkles, href: '/?category=beauty' },
   { id: 'electronics', name: '전자기기', icon: Smartphone, href: '/?category=electronics' },

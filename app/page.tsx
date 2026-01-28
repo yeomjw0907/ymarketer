@@ -144,7 +144,7 @@ export default async function HomePage({
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-1">✨ 추천 아이템</h2>
-                <p className="text-sm text-gray-600">Price Check가 엄선한 상품</p>
+                <p className="text-sm text-gray-600">ymarketer가 엄선한 상품</p>
               </div>
               <Link
                 href="/?category=all"

@@ -38,12 +38,12 @@ export default function TrendSection() {
           </a>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {TREND_ITEMS.map((item) => (
             <a
               key={item.id}
               href="#"
-              className="group relative aspect-[2/3] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
+              className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all"
             >
               {/* 배경 이미지 */}
               <div className="absolute inset-0">
@@ -59,14 +59,14 @@ export default function TrendSection() {
               <div className={`absolute inset-0 bg-gradient-to-t ${item.bgColor}`} />
 
               {/* 텍스트 컨텐츠 */}
-              <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-                <div className="text-xs font-bold uppercase tracking-wider mb-2 opacity-90">
+              <div className="absolute inset-0 flex flex-col justify-end p-3 sm:p-4 text-white">
+                <div className="text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 opacity-90">
                   {item.category}
                 </div>
-                <h3 className="text-2xl font-bold mb-2 leading-tight">
+                <h3 className="text-sm sm:text-base font-bold mb-0.5 leading-tight line-clamp-2">
                   {item.title}
                 </h3>
-                <p className="text-sm opacity-90">
+                <p className="text-[10px] sm:text-xs opacity-90 line-clamp-1">
                   {item.subtitle}
                 </p>
               </div>

@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
-export default function AdminLoginPage() {
+export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
@@ -21,19 +22,19 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
 
-      if (error) {
+      if (signInError) {
         setError('이메일 또는 비밀번호가 올바르지 않습니다.');
         return;
       }
 
       if (data.user) {
-        // 전체 페이지 리로드로 인증 상태 확실히 전파
-        window.location.href = '/admin/dashboard';
+        // 로그인 성공 - 메인 페이지로 리다이렉트
+        window.location.href = '/';
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -44,15 +45,12 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* 로고 & 제목 */}
+        {/* 헤더 */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-            <Lock className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">관리자 로그인</h1>
-          <p className="text-gray-600">ymarketer 관리자 페이지</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">로그인</h1>
+          <p className="text-gray-600">ymarketer 계정으로 로그인하세요</p>
         </div>
 
         {/* 로그인 폼 */}
@@ -79,7 +77,7 @@ export default function AdminLoginPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="admin@ymarketer.kr"
+                  placeholder="example@email.com"
                 />
               </div>
             </div>
@@ -120,18 +118,22 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          {/* 안내 */}
-          <div className="mt-6 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
-            <p>관리자 계정이 필요하신가요?</p>
-            <p className="mt-1">Supabase 대시보드에서 사용자를 생성해주세요.</p>
+          {/* 회원가입 링크 */}
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center text-sm">
+            <p className="text-gray-600">
+              아직 계정이 없으신가요?{' '}
+              <Link href="/signup" className="text-blue-600 font-medium hover:text-blue-700">
+                회원가입
+              </Link>
+            </p>
           </div>
         </div>
 
         {/* 메인으로 돌아가기 */}
         <div className="text-center mt-6">
-          <a href="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+          <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
             ← 메인 페이지로 돌아가기
-          </a>
+          </Link>
         </div>
       </div>
     </div>

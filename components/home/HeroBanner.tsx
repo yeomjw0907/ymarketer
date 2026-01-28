@@ -61,7 +61,9 @@ export default function HeroBanner() {
   };
 
   return (
-    <div className="relative w-full h-[400px] sm:h-[500px] overflow-hidden bg-gray-900">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
+      <div className="container mx-auto max-w-6xl">
+        <div className="relative w-full h-[280px] sm:h-[340px] overflow-hidden rounded-2xl bg-gray-900 shadow-xl">
       {/* 배너 슬라이드 */}
       <div
         className="flex transition-transform duration-700 ease-out h-full"
@@ -131,6 +133,8 @@ export default function HeroBanner() {
             aria-label={`슬라이드 ${index + 1}로 이동`}
           />
         ))}
+      </div>
+        </div>
       </div>
     </div>
   );
