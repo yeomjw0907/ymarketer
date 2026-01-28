@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/hooks/useAuth';
 
@@ -26,13 +26,6 @@ export default function AuthButtons() {
   if (user) {
     return (
       <div className="hidden lg:flex items-center gap-4">
-        <Link
-          href="/mypage"
-          className="flex items-center gap-1 text-sm text-black hover:text-gray-600 transition-colors font-medium"
-        >
-          <User className="w-5 h-5" />
-          <span className="hidden sm:inline">마이</span>
-        </Link>
         <button
           onClick={handleSignOut}
           className="flex items-center gap-1 text-sm text-gray-600 hover:text-black transition-colors"

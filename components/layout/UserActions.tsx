@@ -46,7 +46,7 @@ export default function UserActions() {
         className="flex items-center gap-1.5 text-sm font-semibold text-black hover:text-gray-600 transition-colors"
       >
         <User className="w-5 h-5" />
-        <span>마이</span>
+        <span>마이페이지</span>
       </Link>
     </div>
   );
