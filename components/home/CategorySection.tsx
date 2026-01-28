@@ -3,12 +3,6 @@ import Image from 'next/image';
 
 const CATEGORIES = [
   { 
-    id: 'all', 
-    name: '전체', 
-    image: '/images/category-all.png',
-    href: '/?category=all' 
-  },
-  { 
     id: 'camping', 
     name: '캠핑', 
     image: '/images/category-camping.png',
