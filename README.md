@@ -26,6 +26,8 @@ cp .env.example .env.local
    - Project Settings > API > anon/public key 복사
    - Project Settings > API > service_role key 복사 (관리자용)
 
+6. **(선택)** 더미 상품 데이터 추가: SQL Editor에서 `supabase-seed.sql` 파일 내용을 복사 후 실행하면 캠핑·골프·패션·뷰티·전자기기 등 16개 샘플 상품이 추가됩니다. 메인 페이지와 관리자 페이지에서 바로 확인할 수 있습니다.
+
 ### 3. 개발 서버 실행
 
 ```bash
