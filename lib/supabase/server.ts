@@ -16,9 +16,10 @@ export const supabaseAdmin = createClient(
 
 // Supabase Server Client factory function (use this in Server Components)
 // Request scope 없을 때(정적 생성 등)는 쿠키 없는 클라이언트 반환 → 공개 데이터 조회만 가능
-export function createSupabaseServerClient() {
+// Next.js 15+: cookies()가 비동기이므로 async 함수
+export async function createSupabaseServerClient() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
 
     return createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -6,7 +6,7 @@ import { calculatePrice, formatKRW } from '@/lib/utils/calculator';
 import { Product } from '@/lib/types/database.types';
 
 export default async function HotDealsPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const settings = await getGlobalSettings();
 
   // 모든 활성 상품 가져오기

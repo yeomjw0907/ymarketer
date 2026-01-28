@@ -14,7 +14,7 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   
   // Next.js 15: searchParams는 Promise로 감싸져 있어서 await 필요
   const params = await searchParams;

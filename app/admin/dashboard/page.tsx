@@ -14,7 +14,7 @@ import { getGlobalSettings, getYenRate } from '@/lib/utils/settings';
 import { formatKRW } from '@/lib/utils/calculator';
 
 export default async function AdminDashboardPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   
   // 인증 확인
   const { data: { user } } = await supabase.auth.getUser();

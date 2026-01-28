@@ -14,7 +14,7 @@ export default async function OrderNewPage({
   const productId = params.productId;
   if (!productId) notFound();
 
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     redirect(`/login?redirect=${encodeURIComponent('/order/new?productId=' + productId)}`);

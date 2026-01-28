@@ -7,7 +7,7 @@ import { getGlobalSettings } from '@/lib/utils/settings';
 import { calculatePrice, formatKRW } from '@/lib/utils/calculator';
 
 export default async function FavoritesPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   
   // 인증 확인
   const { data: { user } } = await supabase.auth.getUser();

@@ -6,7 +6,7 @@ import { GlobalSettings } from '@/lib/types/database.types';
  * Server Component나 Server Action에서 사용
  */
 export async function getGlobalSettings(): Promise<GlobalSettings> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   
   const { data, error } = await supabase
     .from('global_settings')
@@ -38,7 +38,7 @@ export async function getGlobalSettings(): Promise<GlobalSettings> {
  * 엔화 환율만 가져오기
  */
 export async function getYenRate(): Promise<number> {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   
   const { data, error } = await supabase
     .from('global_settings')

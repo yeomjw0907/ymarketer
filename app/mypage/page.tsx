@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import LogoutButton from '@/components/mypage/LogoutButton';
 
 export default async function MyPage() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   
   // 인증 확인
   const { data: { user } } = await supabase.auth.getUser();

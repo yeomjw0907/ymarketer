@@ -13,7 +13,7 @@ export default async function ProductDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createSupabaseServerClient();
   
   // Next.js 15: params는 Promise로 감싸져 있어서 await 필요
   const { id } = await params;
