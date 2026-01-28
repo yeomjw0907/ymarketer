@@ -4,8 +4,8 @@ import MobileSearchBar from '@/components/layout/MobileSearchBar';
 import Logo from '@/components/brand/Logo';
 import TopBar from '@/components/layout/TopBar';
 import Navigation from '@/components/layout/Navigation';
-import DesktopSearch from '@/components/layout/DesktopSearch';
 import UserActions from '@/components/layout/UserActions';
+import MobileMenu from '@/components/layout/MobileMenu';
 
 export default function Header() {
   return (
@@ -23,15 +23,11 @@ export default function Header() {
             {/* 네비게이션 (데스크톱) */}
             <Navigation />
 
-            {/* 검색바 (데스크톱) */}
-            <Suspense fallback={<div className="hidden lg:block flex-1 max-w-md h-10" />}>
-              <DesktopSearch />
-            </Suspense>
-
             {/* 우측 액션 */}
             <div className="flex items-center gap-4">
               <UserActions />
               <AuthButtons />
+              <MobileMenu />
             </div>
           </div>
         </div>

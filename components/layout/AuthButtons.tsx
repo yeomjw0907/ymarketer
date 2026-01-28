@@ -1,36 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { User, LogOut } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export default function AuthButtons() {
   const router = useRouter();
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // 현재 사용자 확인
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-      setIsLoading(false);
-    });
-
-    // 인증 상태 변화 감지
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user, isLoading } = useAuth();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    router.push('/');
+    router.push('/auth');
   };
 
   if (isLoading) {
@@ -43,7 +25,7 @@ export default function AuthButtons() {
 
   if (user) {
     return (
-      <div className="flex items-center gap-4">
+      <div className="hidden lg:flex items-center gap-4">
         <Link
           href="/mypage"
           className="flex items-center gap-1 text-sm text-black hover:text-gray-600 transition-colors font-medium"
@@ -63,7 +45,7 @@ export default function AuthButtons() {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="hidden lg:flex items-center gap-3">
       <Link
         href="/login"
         className="text-sm text-black hover:text-gray-600 font-medium transition-colors"

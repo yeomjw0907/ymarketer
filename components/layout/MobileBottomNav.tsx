@@ -1,37 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, LayoutGrid, Zap, Heart, User } from 'lucide-react';
-import { supabase } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 const NAV_ITEMS = [
   { href: '/categories', label: '카테고리', icon: LayoutGrid },
   { href: '/hot-deals', label: '핫딜', icon: Zap },
-  { href: '/', label: '홈', icon: Home },
+  { href: '/home', label: '홈', icon: Home },
   { href: '/favorites', label: '좋아요', icon: Heart },
-  { href: '/mypage', label: '마이', icon: User, loginLabel: '로그인' },
+  { href: '/mypage', label: '마이', icon: User, loginLabel: '로그인/회원가입' },
 ];
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session?.user);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
 
   const isActive = (item: (typeof NAV_ITEMS)[0]) => {
-    if (item.href === '/') return pathname === '/';
+    if (item.href === '/home') return pathname === '/home' || pathname === '/';
     return pathname.startsWith(item.href);
   };
 
@@ -45,7 +33,7 @@ export default function MobileBottomNav() {
           const Icon = item.icon;
           const active = isActive(item);
           const label = item.loginLabel && !isLoggedIn ? item.loginLabel : item.label;
-          const href = item.loginLabel && !isLoggedIn ? '/login' : item.href;
+          const href = item.loginLabel && !isLoggedIn ? '/auth' : item.href;
           
           return (
             <Link

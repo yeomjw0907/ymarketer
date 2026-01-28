@@ -4,37 +4,25 @@ import Link from 'next/link';
 import { Heart, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export default function UserActions() {
   const [favoriteCount, setFavoriteCount] = useState(0);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-
-      if (user) {
-        // 찜 개수 가져오기
-        const { count } = await supabase
-          .from('favorites')
-          .select('id', { count: 'exact' })
-          .eq('user_id', user.id);
-        setFavoriteCount(count || 0);
-      }
-    };
-
-    checkAuth();
-
-    // 실시간 구독
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+    if (user) {
+      // 찜 개수 가져오기
+      supabase
+        .from('favorites')
+        .select('id', { count: 'exact' })
+        .eq('user_id', user.id)
+        .then(({ count }) => setFavoriteCount(count || 0));
+    } else {
+      setFavoriteCount(0);
+    }
+  }, [user]);
 
   return (
     <div className="hidden lg:flex items-center gap-6">

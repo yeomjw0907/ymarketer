@@ -2,15 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Tent, Award, Shirt, Sparkles, Smartphone, TrendingUp } from 'lucide-react';
-
-const CATEGORIES = [
-  { id: 'camping', name: '캠핑', icon: Tent, href: '/?category=camping' },
-  { id: 'golf', name: '골프', icon: Award, href: '/?category=golf' },
-  { id: 'fashion', name: '패션', icon: Shirt, href: '/?category=fashion' },
-  { id: 'beauty', name: '뷰티', icon: Sparkles, href: '/?category=beauty' },
-  { id: 'electronics', name: '전자기기', icon: Smartphone, href: '/?category=electronics' },
-];
+import { ChevronDown, TrendingUp } from 'lucide-react';
+import { CATEGORIES } from '@/lib/constants/navigation';
 
 const NAV_ITEMS = [
   { 
@@ -64,7 +57,7 @@ export default function Navigation() {
               <div className="p-6">
                 <div className="grid grid-cols-1 gap-2">
                   <Link
-                    href="/?category=all"
+                    href="/home?category=all"
                     className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors"
                   >
                     <div className="w-10 h-10 bg-gray-100 flex items-center justify-center">

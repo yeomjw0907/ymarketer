@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import MobileBottomNav from "@/components/layout/MobileBottomNav";
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
 import { ToastProvider } from "@/components/common/Toast";
 
 export const metadata: Metadata = {
@@ -21,13 +19,8 @@ export default function RootLayout({
     <html lang="ko">
       <body className="antialiased min-h-screen flex flex-col">
         <ToastProvider>
-          <Header />
-          <main className="flex-1 pb-16 lg:pb-0">
-            {children}
-          </main>
-          <Footer />
           <Suspense fallback={null}>
-            <MobileBottomNav />
+            <LayoutWrapper>{children}</LayoutWrapper>
           </Suspense>
         </ToastProvider>
       </body>

@@ -387,7 +387,7 @@ export default function SignupPage() {
 
         {/* 메인으로 돌아가기 */}
         <div className="text-center mt-6">
-          <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+          <Link href="/home" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
             ← 메인 페이지로 돌아가기
           </Link>
         </div>

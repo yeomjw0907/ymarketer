@@ -15,7 +15,7 @@ export default function Logo({ className = '', size = 'md' }: LogoProps) {
   };
 
   return (
-    <Link href="/" className={`inline-block ${className}`}>
+    <Link href="/home" className={`inline-block ${className}`}>
       <div className={`font-black tracking-tighter ${sizeClasses[size]} select-none`}>
         <span className="text-black">YMARKETER</span>
       </div>

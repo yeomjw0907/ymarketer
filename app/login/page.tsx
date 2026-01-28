@@ -37,8 +37,8 @@ function LoginForm() {
       }
 
       if (data.user) {
-        // 로그인 성공 - redirect 파라미터 또는 메인으로
-        window.location.href = safeRedirect;
+        // 로그인 성공 - redirect 파라미터 또는 홈으로
+        window.location.href = safeRedirect === '/' ? '/home' : safeRedirect;
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -141,7 +141,7 @@ export default function LoginPage() {
           <LoginForm />
         </Suspense>
         <div className="text-center mt-6">
-          <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+          <Link href="/home" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
             ← 메인 페이지로 돌아가기
           </Link>
         </div>
