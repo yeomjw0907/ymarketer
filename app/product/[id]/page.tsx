@@ -11,9 +11,10 @@ import OrderForm from '@/components/product/OrderForm';
 export default async function ProductDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  // Next.js 15: params는 Promise로 감싸져 있어서 await 필요
+  const { id } = await params;
 
   // 상품 정보 가져오기
   const { data: product, error } = await supabaseServer

@@ -20,9 +20,11 @@ const CATEGORIES: { value: Category; label: string; emoji: string }[] = [
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { category?: string };
+  searchParams: Promise<{ category?: string }>;
 }) {
-  const category = (searchParams.category as Category) || 'all';
+  // Next.js 15: searchParams는 Promise로 감싸져 있어서 await 필요
+  const params = await searchParams;
+  const category = (params.category as Category) || 'all';
   const settings = await getGlobalSettings();
 
   // 상품 목록 가져오기
