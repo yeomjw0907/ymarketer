@@ -3,14 +3,27 @@
 import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { useToast } from '@/components/common/Toast';
 
 export default function LogoutButton() {
   const router = useRouter();
+  const toast = useToast();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-    router.refresh();
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast.success('로그아웃되었습니다');
+      
+      setTimeout(() => {
+        router.push('/');
+        router.refresh();
+      }, 500);
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('로그아웃 중 오류가 발생했습니다');
+    }
   };
 
   return (

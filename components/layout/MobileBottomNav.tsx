@@ -51,15 +51,15 @@ export default function MobileBottomNav() {
             <Link
               key={item.href}
               href={href}
-              className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full min-w-0 text-gray-500 hover:text-blue-600 transition-colors"
+              className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full min-w-0 text-gray-400 hover:text-black transition-colors"
             >
               <Icon
-                className={`w-5 h-5 shrink-0 ${active ? 'text-blue-600' : ''}`}
+                className={`w-5 h-5 shrink-0 ${active ? 'text-black' : ''}`}
                 strokeWidth={active ? 2.5 : 2}
               />
               <span
-                className={`text-[9px] font-medium truncate max-w-full ${
-                  active ? 'text-blue-600' : ''
+                className={`text-[9px] font-semibold truncate max-w-full ${
+                  active ? 'text-black' : ''
                 }`}
               >
                 {label}

@@ -1,10 +1,10 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Heart } from 'lucide-react';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getGlobalSettings } from '@/lib/utils/settings';
-import { calculatePrice, formatKRW } from '@/lib/utils/calculator';
+import { calculatePrice } from '@/lib/utils/calculator';
+import ProductCard from '@/components/product/ProductCard';
 
 export default async function FavoritesPage() {
   const supabase = await createSupabaseServerClient();
@@ -33,73 +33,37 @@ export default async function FavoritesPage() {
   const favoriteProducts = favorites?.map((fav) => fav.products).filter(Boolean) || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8">
         {/* 헤더 */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">❤️ 좋아요</h1>
-          <p className="text-sm text-gray-600">찜한 상품 {favoriteProducts.length}개</p>
+        <div className="mb-8 border-b border-gray-200 pb-8">
+          <h1 className="text-3xl font-black text-black mb-2 tracking-tight">FAVORITES</h1>
+          <p className="text-sm text-gray-500 font-medium">{favoriteProducts.length}개 상품</p>
         </div>
 
         {favoriteProducts.length === 0 ? (
-          <div className="bg-white rounded-xl border-2 border-gray-200 p-12 text-center">
+          <div className="bg-white border border-gray-200 p-16 text-center">
             <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 mb-4">찜한 상품이 없습니다.</p>
+            <p className="text-black font-bold text-lg mb-2">NO FAVORITES</p>
+            <p className="text-gray-500 text-sm mb-6">찜한 상품이 없습니다</p>
             <Link
               href="/"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors"
+              className="inline-block bg-black hover:bg-gray-800 text-white font-semibold px-8 py-3 transition-colors"
             >
-              상품 둘러보기
+              상품 보러가기
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
             {favoriteProducts.map((product: any) => {
               const calc = calculatePrice(product.jp_price, product.kr_price, product.weight, settings);
               
               return (
-                <Link
+                <ProductCard
                   key={product.id}
-                  href={`/product/${product.id}`}
-                  className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden hover:border-blue-400 hover:shadow-lg transition-all group"
-                >
-                  {/* 이미지 */}
-                  <div className="relative aspect-square bg-gray-100">
-                    {product.image_url && (
-                      <Image
-                        src={product.image_url}
-                        alt={product.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    )}
-                    {product.is_hot && (
-                      <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                        🔥 HOT
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 정보 */}
-                  <div className="p-3">
-                    <div className="text-xs text-gray-500 mb-1">{product.brand}</div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem]">
-                      {product.name}
-                    </h3>
-
-                    {calc.saved_amount > 0 && (
-                      <div className="bg-green-50 rounded-lg p-2 mb-2">
-                        <div className="text-green-600 font-bold text-xs">
-                          {formatKRW(calc.saved_amount)} 저렴
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="text-xs text-gray-400 line-through">
-                      국내 {formatKRW(product.kr_price)}
-                    </div>
-                  </div>
-                </Link>
+                  product={product}
+                  calculation={calc}
+                />
               );
             })}
           </div>

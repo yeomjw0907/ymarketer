@@ -50,23 +50,23 @@ function LoginForm() {
 
   return (
     <>
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">로그인</h1>
-        <p className="text-gray-600">ymarketer 계정으로 로그인하세요</p>
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-black text-black mb-3 tracking-tight">LOGIN</h1>
+        <p className="text-sm text-gray-500">YMARKETER 계정으로 로그인</p>
       </div>
 
-      <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-xl p-8">
+      <div className="bg-white border border-gray-200 p-10">
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* 에러 메시지 */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red text-red-deep px-4 py-3 text-sm">
                 {error}
               </div>
             )}
 
             {/* 이메일 */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-xs font-bold text-black mb-2 uppercase tracking-wide">
                 이메일
               </label>
               <div className="relative">
@@ -77,7 +77,7 @@ function LoginForm() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full pl-11 pr-4 py-4 border border-gray-200 focus:border-black transition-colors text-black placeholder:text-gray-400"
                   placeholder="example@email.com"
                 />
               </div>
@@ -85,7 +85,7 @@ function LoginForm() {
 
             {/* 비밀번호 */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-xs font-bold text-black mb-2 uppercase tracking-wide">
                 비밀번호
               </label>
               <div className="relative">
@@ -96,7 +96,7 @@ function LoginForm() {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full pl-11 pr-12 py-4 border border-gray-200 focus:border-black transition-colors text-black placeholder:text-gray-400"
                   placeholder="••••••••"
                 />
                 <button
@@ -113,7 +113,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 rounded-lg transition-colors"
+              className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white font-bold py-4 transition-colors"
             >
               {isLoading ? '로그인 중...' : '로그인'}
             </button>
@@ -123,7 +123,7 @@ function LoginForm() {
           <div className="mt-6 pt-6 border-t border-gray-200 text-center text-sm">
             <p className="text-gray-600">
               아직 계정이 없으신가요?{' '}
-              <Link href="/signup" className="text-blue-600 font-medium hover:text-blue-700">
+              <Link href="/signup" className="text-black font-bold hover:text-gray-600 underline">
                 회원가입
               </Link>
             </p>
@@ -135,7 +135,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4 py-20">
       <div className="w-full max-w-md">
         <Suspense fallback={<div className="text-center text-gray-500">로딩 중...</div>}>
           <LoginForm />

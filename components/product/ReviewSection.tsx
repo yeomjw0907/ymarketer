@@ -27,12 +27,12 @@ export default function ReviewSection({ productId }: ReviewSectionProps) {
   };
 
   return (
-    <div className="mt-12 bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8 shadow-lg">
+    <div className="mt-12 bg-white border border-gray-200 p-6 sm:p-8">
       {/* 섹션 헤더 */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="w-6 h-6 text-blue-600" />
-          <h2 className="text-2xl font-bold text-gray-900">고객 리뷰</h2>
+        <div className="flex items-center gap-3">
+          <MessageSquare className="w-6 h-6 text-black" />
+          <h2 className="text-2xl font-black text-black tracking-tight">REVIEWS</h2>
         </div>
         
         {!showForm && (
@@ -45,9 +45,9 @@ export default function ReviewSection({ productId }: ReviewSectionProps) {
               }
               setShowForm(true);
             }}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors text-sm"
+            className="bg-black hover:bg-gray-800 text-white font-bold px-6 py-3 transition-colors text-sm"
           >
-            리뷰 작성하기
+            리뷰 작성
           </button>
         )}
       </div>

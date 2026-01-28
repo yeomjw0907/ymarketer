@@ -3,12 +3,14 @@
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Package, MapPin } from 'lucide-react';
+import { ArrowLeft, Package, MapPin, ChevronDown } from 'lucide-react';
 import { formatKRW } from '@/lib/utils/calculator';
 import type { Product } from '@/lib/types/database.types';
 import type { PriceCalculation } from '@/lib/types/database.types';
 import ShippingAddressModal from './ShippingAddressModal';
 import TossPaymentButton from './TossPaymentButton';
+import ProgressBar from './ProgressBar';
+import PriceSummary from './PriceSummary';
 
 interface OrderCheckoutProps {
   product: Product;
@@ -28,9 +30,11 @@ export default function OrderCheckout({
   const [quantity, setQuantity] = useState(1);
   const [shipping, setShipping] = useState(profile);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [orderInfoCollapsed, setOrderInfoCollapsed] = useState(true);
 
   const totalPrice = calculation.final_price * quantity;
   const krTotal = product.kr_price * quantity;
+  const savedAmount = krTotal - totalPrice;
 
   const onAddressSave = useCallback(
     (data: { name: string; phone: string; address: string }) => {
@@ -41,95 +45,170 @@ export default function OrderCheckout({
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-32">
-      <div className="container mx-auto px-4 py-6 max-w-2xl">
+    <div className="min-h-screen bg-white pb-32">
+      <div className="container mx-auto px-4 py-8">
+        {/* 뒤로가기 */}
         <Link
           href={`/product/${product.id}`}
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-black hover:text-gray-600 mb-8 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">상품으로 돌아가기</span>
+          <span className="font-semibold">상품으로 돌아가기</span>
         </Link>
 
-        <h1 className="text-xl font-bold text-gray-900 mb-6">주문/결제</h1>
+        {/* 제목 */}
+        <h1 className="text-3xl font-black text-black mb-3 tracking-tight">ORDER & PAYMENT</h1>
+        <p className="text-sm text-gray-500 mb-8">주문 정보를 확인하고 결제를 진행하세요</p>
 
-        {/* 배송지 정보 */}
-        <section className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm mb-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 text-gray-500 text-sm mb-2">
-                <MapPin className="w-4 h-4 shrink-0" />
-                <span>배송지</span>
-              </div>
-              <p className="font-semibold text-gray-900">{shipping.name || '—'}</p>
-              <p className="text-sm text-gray-600 mt-0.5">{shipping.phone || '—'}</p>
-              <p className="text-sm text-gray-600 mt-1 break-words">{shipping.address || '배송지를 입력해주세요'}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setAddressModalOpen(true)}
-              className="shrink-0 text-sm font-medium text-blue-600 hover:text-blue-700 py-1 px-3 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors"
-            >
-              배송지 변경
-            </button>
-          </div>
-        </section>
+        {/* 진행 단계 */}
+        <ProgressBar currentStep={2} />
 
-        {/* 주문 상품 */}
-        <section className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm mb-4">
-          <h2 className="text-sm font-semibold text-gray-700 mb-3">주문 상품</h2>
-          <div className="flex gap-4">
-            <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-              {product.image_url ? (
-                <Image src={product.image_url} alt={product.name} fill className="object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Package className="w-8 h-8 text-gray-400" />
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* 좌측: 주문 폼 */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* 1. 주문자 정보 (접기 가능) */}
+            <section className="bg-white border border-gray-200">
+              <button
+                type="button"
+                onClick={() => setOrderInfoCollapsed(!orderInfoCollapsed)}
+                className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-sm">
+                    1
+                  </div>
+                  <h2 className="font-bold text-black">주문자 정보</h2>
+                </div>
+                <ChevronDown
+                  className={`w-5 h-5 transition-transform ${
+                    orderInfoCollapsed ? '' : 'rotate-180'
+                  }`}
+                />
+              </button>
+              {!orderInfoCollapsed && (
+                <div className="p-6 pt-0 border-t border-gray-200">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">이름</span>
+                      <span className="font-medium text-black">{shipping.name || '—'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">이메일</span>
+                      <span className="font-medium text-black">{userEmail}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">전화번호</span>
+                      <span className="font-medium text-black">{shipping.phone || '—'}</span>
+                    </div>
+                  </div>
                 </div>
               )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 truncate">{product.name}</p>
-              <p className="text-sm text-gray-500 mt-1">
-                수량{' '}
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="inline-flex items-center justify-center w-6 h-6 rounded border border-gray-300 text-gray-600 hover:bg-gray-50"
-                >
-                  −
-                </button>
-                <span className="mx-2 font-medium text-gray-900">{quantity}</span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.min(99, q + 1))}
-                  className="inline-flex items-center justify-center w-6 h-6 rounded border border-gray-300 text-gray-600 hover:bg-gray-50"
-                >
-                  +
-                </button>
-              </p>
-              <p className="text-xs text-gray-400 mt-2">예상 도착: 결제 후 7~14일 소요</p>
-            </div>
-            <div className="text-right shrink-0">
-              <p className="font-semibold text-gray-900">{formatKRW(calculation.final_price * quantity)}</p>
-            </div>
-          </div>
-        </section>
+            </section>
 
-        {/* 결제 금액 / 적립 혜택 */}
-        <section className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm mb-4">
-          <h2 className="text-sm font-semibold text-gray-700 mb-3">결제 정보</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">결제금액</span>
-              <span className="font-semibold text-gray-900">{formatKRW(totalPrice)}</span>
-            </div>
-            <div className="flex justify-between text-gray-500">
-              <span>적립 혜택</span>
-              <span>결제 금액의 1% 적립 예정 (약 {formatKRW(Math.round(totalPrice * 0.01))})</span>
-            </div>
+            {/* 2. 배송지 정보 */}
+            <section className="bg-white border border-gray-200">
+              <div className="flex items-center gap-3 p-6">
+                <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-sm">
+                  2
+                </div>
+                <h2 className="font-bold text-black">배송 정보</h2>
+              </div>
+              <div className="px-6 pb-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 text-gray-500 text-xs mb-3">
+                      <MapPin className="w-4 h-4 shrink-0" />
+                      <span>배송지 주소</span>
+                    </div>
+                    <p className="font-semibold text-black mb-1">{shipping.name || '—'}</p>
+                    <p className="text-sm text-gray-600 mb-1">{shipping.phone || '—'}</p>
+                    <p className="text-sm text-gray-700 break-words">
+                      {shipping.address || '배송지를 입력해주세요'}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-3">
+                      📦 예상 도착: 주문 후 7-14일
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAddressModalOpen(true)}
+                    className="shrink-0 bg-white hover:bg-gray-50 border border-gray-300 hover:border-black text-black font-semibold py-2 px-4 text-sm transition-colors"
+                  >
+                    변경
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* 3. 주문 상품 */}
+            <section className="bg-white border border-gray-200">
+              <div className="flex items-center gap-3 p-6 border-b border-gray-200">
+                <div className="w-8 h-8 bg-black text-white flex items-center justify-center font-bold text-sm">
+                  3
+                </div>
+                <h2 className="font-bold text-black">주문 상품</h2>
+              </div>
+              <div className="p-6">
+                <div className="flex gap-4">
+                  <div className="relative w-24 h-24 bg-gray-100 border border-gray-200 shrink-0">
+                    {product.image_url ? (
+                      <Image
+                        src={product.image_url}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-gray-500 mb-1">{product.brand}</p>
+                    <p className="font-bold text-black mb-2">{product.name}</p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-xs text-gray-600">수량</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                          className="w-7 h-7 flex items-center justify-center border border-gray-300 hover:bg-gray-50 transition-colors"
+                        >
+                          −
+                        </button>
+                        <span className="w-10 text-center font-bold text-black">{quantity}</span>
+                        <button
+                          type="button"
+                          onClick={() => setQuantity((q) => q + 1)}
+                          className="w-7 h-7 flex items-center justify-center border border-gray-300 hover:bg-gray-50 transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-lg font-black text-black">
+                      {formatKRW(calculation.final_price * quantity)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
-        </section>
+
+          {/* 우측: Sticky 가격 요약 */}
+          <div>
+            <PriceSummary
+              productPrice={calculation.final_price}
+              quantity={quantity}
+              totalPrice={totalPrice}
+              kr_total={krTotal}
+              saved_amount={savedAmount}
+              onCheckout={() => {}}
+              isLoading={false}
+            />
+          </div>
+        </div>
 
         {/* 배송지 변경 모달 */}
         <ShippingAddressModal

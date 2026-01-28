@@ -48,6 +48,29 @@ export default function SignupPage() {
     setTimeout(() => document.getElementById('addressDetail')?.focus(), 100);
   };
 
+  // 휴대폰 번호 하이픈 자동 포맷 (010-XXXX-XXXX 등)
+  const formatPhoneInput = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 3) return digits;
+    if (digits.startsWith('02')) {
+      // 서울: 02-XXX-XXXX 또는 02-XXXX-XXXX
+      if (digits.length <= 5) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+      return `${digits.slice(0, 2)}-${digits.slice(2, 5)}-${digits.slice(5, 9)}`;
+    }
+    if (digits.startsWith('01')) {
+      // 휴대폰: 010-XXXX-XXXX, 011-XXX-XXXX 등
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+      return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+    }
+    if (digits.length >= 2 && digits[0] === '0') {
+      // 지역번호: 031-XXX-XXXX 등
+      if (digits.length <= 3) return digits;
+      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+    }
+    return digits.slice(0, 11);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -59,7 +82,19 @@ export default function SignupPage() {
       return;
     }
 
-    if (formData.address && !formData.addressDetail.trim()) {
+    if (!formData.phone.trim()) {
+      setError('전화번호를 입력해주세요.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.address.trim()) {
+      setError('주소를 검색해주세요.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.addressDetail.trim()) {
       setError('상세 주소를 입력해주세요.');
       setIsLoading(false);
       return;
@@ -157,15 +192,15 @@ export default function SignupPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* 에러 메시지 */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-red-50 border border-red text-red-deep px-4 py-3 text-sm">
                 {error}
               </div>
             )}
 
             {/* 이메일 */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                이메일 <span className="text-red-500">*</span>
+              <label htmlFor="email" className="block text-xs font-bold text-black mb-2 uppercase tracking-wide">
+                이메일 <span className="text-red">*</span>
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -175,7 +210,7 @@ export default function SignupPage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
+                  className="w-full pl-11 pr-4 py-4 border border-gray-200 focus:border-black transition-colors text-black placeholder:text-gray-400"
                   placeholder="example@email.com"
                 />
               </div>
@@ -203,15 +238,16 @@ export default function SignupPage() {
             {/* 전화번호 */}
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                전화번호 (선택)
+                전화번호 <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="tel"
                   id="phone"
+                  required
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, phone: formatPhoneInput(e.target.value) })}
                   className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
                   placeholder="010-1234-5678"
                 />
@@ -221,7 +257,7 @@ export default function SignupPage() {
             {/* 주소 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                주소 (선택)
+                주소 <span className="text-red-500">*</span>
               </label>
               <div className="space-y-2">
                 <div className="flex gap-2">
@@ -248,7 +284,7 @@ export default function SignupPage() {
                   <input
                     type="text"
                     id="addressDetail"
-                    required={!!formData.address}
+                    required
                     value={formData.addressDetail}
                     onChange={(e) => setFormData({ ...formData, addressDetail: e.target.value })}
                     placeholder="상세주소를 입력해주세요 (동, 호수 등) *"
@@ -332,7 +368,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-3 rounded-lg transition-colors mt-6"
+              className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-400 text-white font-bold py-4 transition-colors mt-6"
             >
               {isLoading ? '가입 중...' : '회원가입'}
             </button>
@@ -342,7 +378,7 @@ export default function SignupPage() {
           <div className="mt-6 pt-6 border-t border-gray-200 text-center text-sm">
             <p className="text-gray-600">
               이미 계정이 있으신가요?{' '}
-              <Link href="/login" className="text-blue-600 font-medium hover:text-blue-700">
+              <Link href="/login" className="text-black font-bold hover:text-gray-600 underline">
                 로그인
               </Link>
             </p>

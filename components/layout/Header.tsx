@@ -1,25 +1,44 @@
 import { Suspense } from 'react';
-import Link from 'next/link';
 import AuthButtons from '@/components/layout/AuthButtons';
 import MobileSearchBar from '@/components/layout/MobileSearchBar';
+import Logo from '@/components/brand/Logo';
+import TopBar from '@/components/layout/TopBar';
+import Navigation from '@/components/layout/Navigation';
+import DesktopSearch from '@/components/layout/DesktopSearch';
+import UserActions from '@/components/layout/UserActions';
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/90 backdrop-blur">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* 로고 */}
-        <Link href="/" className="flex items-center space-x-2">
-          <h1 className="text-xl font-bold tracking-tight text-gray-900">
-            ymarketer
-          </h1>
-        </Link>
+    <header className="sticky top-0 z-50 w-full bg-white">
+      {/* 상단바 (데스크톱만) */}
+      <TopBar />
 
-        {/* 우측 - 로그인/회원가입 또는 사용자 메뉴 */}
-        <AuthButtons />
+      {/* 메인 헤더 */}
+      <div className="border-b border-gray-200">
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between gap-8">
+            {/* 로고 */}
+            <Logo size="md" />
+
+            {/* 네비게이션 (데스크톱) */}
+            <Navigation />
+
+            {/* 검색바 (데스크톱) */}
+            <Suspense fallback={<div className="hidden lg:block flex-1 max-w-md h-10" />}>
+              <DesktopSearch />
+            </Suspense>
+
+            {/* 우측 액션 */}
+            <div className="flex items-center gap-4">
+              <UserActions />
+              <AuthButtons />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* 모바일 검색창 */}
-      <Suspense fallback={<div className="sm:hidden h-12" />}>
+      <Suspense fallback={<div className="lg:hidden h-12" />}>
         <MobileSearchBar />
       </Suspense>
     </header>

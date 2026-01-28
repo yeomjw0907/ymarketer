@@ -1,8 +1,12 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { User, Heart, ShoppingCart, Settings, LogOut } from 'lucide-react';
+import { Heart, ShoppingCart, Settings, HelpCircle, Bell, Gift } from 'lucide-react';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import UserSummaryCard from '@/components/mypage/UserSummaryCard';
+import QuickActions from '@/components/mypage/QuickActions';
+import RecentOrders from '@/components/mypage/RecentOrders';
+import MenuGroup from '@/components/mypage/MenuGroup';
 import LogoutButton from '@/components/mypage/LogoutButton';
+import DeleteAccountButton from '@/components/mypage/DeleteAccountButton';
 
 export default async function MyPage() {
   const supabase = await createSupabaseServerClient();
@@ -22,71 +26,66 @@ export default async function MyPage() {
     .single();
 
   // 통계 가져오기
-  const [ordersResult, favoritesResult] = await Promise.all([
+  const [ordersResult, favoritesResult, recentOrdersResult] = await Promise.all([
     supabase.from('orders').select('id', { count: 'exact' }).eq('customer_phone', profile?.phone || ''),
     supabase.from('favorites').select('id', { count: 'exact' }).eq('user_id', user.id),
+    supabase
+      .from('orders')
+      .select('id, product_name, total_amount, status, created_at')
+      .eq('customer_phone', profile?.phone || '')
+      .order('created_at', { ascending: false })
+      .limit(3),
   ]);
 
   const orderCount = ordersResult.count || 0;
   const favoriteCount = favoritesResult.count || 0;
+  const recentOrders = recentOrdersResult.data || [];
 
-  const MENU_ITEMS = [
-    { href: '/favorites', label: '좋아요', icon: Heart, description: `${favoriteCount}개 상품` },
+  const SHOPPING_MENU = [
     { href: '/mypage/orders', label: '주문 내역', icon: ShoppingCart, description: `${orderCount}건` },
+    { href: '/favorites', label: '찜한 상품', icon: Heart, description: `${favoriteCount}개` },
+  ];
+
+  const SUPPORT_MENU = [
+    { href: '/mypage/notice', label: '공지사항', icon: Bell, description: '새로운 소식' },
+    { href: '/mypage/faq', label: 'FAQ', icon: HelpCircle, description: '자주 묻는 질문' },
+    { href: '/mypage/events', label: '이벤트', icon: Gift, description: '진행 중인 이벤트' },
+  ];
+
+  const ACCOUNT_MENU = [
     { href: '/mypage/settings', label: '설정', icon: Settings, description: '프로필 수정' },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        {/* 프로필 섹션 */}
-        <div className="bg-white rounded-xl border-2 border-gray-200 p-6 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-              <User className="w-8 h-8 text-blue-600" />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">{profile?.name || '사용자'}</h2>
-              <p className="text-sm text-gray-500">{user.email}</p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* 헤더 */}
+        <h1 className="text-3xl font-black text-black mb-8 tracking-tight">MY PAGE</h1>
 
-        {/* 통계 */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-white rounded-xl border-2 border-gray-200 p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600 mb-1">{orderCount}</div>
-            <div className="text-xs text-gray-600">주문 건수</div>
-          </div>
-          <div className="bg-white rounded-xl border-2 border-gray-200 p-4 text-center">
-            <div className="text-2xl font-bold text-red-600 mb-1">{favoriteCount}</div>
-            <div className="text-xs text-gray-600">찜한 상품</div>
-          </div>
-        </div>
+        {/* 사용자 요약 카드 */}
+        <UserSummaryCard
+          name={profile?.name || '사용자'}
+          email={user.email || ''}
+          orderCount={orderCount}
+          favoriteCount={favoriteCount}
+          points={1500}
+        />
 
-        {/* 메뉴 */}
-        <div className="space-y-3">
-          {MENU_ITEMS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="bg-white rounded-xl border-2 border-gray-200 p-4 flex items-center gap-4 hover:border-blue-400 hover:shadow-md transition-all"
-              >
-                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-gray-700" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900">{item.label}</div>
-                  <div className="text-xs text-gray-500">{item.description}</div>
-                </div>
-              </Link>
-            );
-          })}
+        {/* 빠른 액션 */}
+        <QuickActions />
 
-          {/* 로그아웃 */}
+        {/* 최근 주문 */}
+        <RecentOrders orders={recentOrders} />
+
+        {/* 메뉴 그룹 */}
+        <MenuGroup title="쇼핑 정보" items={SHOPPING_MENU} />
+        <MenuGroup title="고객 지원" items={SUPPORT_MENU} />
+        <MenuGroup title="계정" items={ACCOUNT_MENU} />
+
+        {/* 로그아웃 & 회원탈퇴 */}
+        <div className="space-y-2 mt-6">
           <LogoutButton />
+          <DeleteAccountButton />
         </div>
       </div>
     </div>
