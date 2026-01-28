@@ -4,18 +4,10 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { getGlobalSettings } from '@/lib/utils/settings';
 import { calculatePrice, formatKRW } from '@/lib/utils/calculator';
 import { Product } from '@/lib/types/database.types';
-
-// 카테고리 필터 타입
-type Category = 'all' | 'camping' | 'golf' | 'fashion' | 'beauty' | 'electronics';
-
-const CATEGORIES: { value: Category; label: string; emoji: string }[] = [
-  { value: 'all', label: '전체', emoji: '🏷️' },
-  { value: 'camping', label: '캠핑', emoji: '⛺' },
-  { value: 'golf', label: '골프', emoji: '⛳' },
-  { value: 'fashion', label: '패션', emoji: '👔' },
-  { value: 'beauty', label: '뷰티', emoji: '💄' },
-  { value: 'electronics', label: '전자기기', emoji: '📱' },
-];
+import HeroBanner from '@/components/home/HeroBanner';
+import CategorySection from '@/components/home/CategorySection';
+import TrendSection from '@/components/home/TrendSection';
+import FullWidthBanner from '@/components/home/FullWidthBanner';
 
 export default async function HomePage({
   searchParams,
@@ -24,7 +16,7 @@ export default async function HomePage({
 }) {
   // Next.js 15: searchParams는 Promise로 감싸져 있어서 await 필요
   const params = await searchParams;
-  const category = (params.category as Category) || 'all';
+  const category = params.category || 'all';
   const settings = await getGlobalSettings();
 
   // 상품 목록 가져오기
@@ -45,70 +37,39 @@ export default async function HomePage({
     console.error('Failed to fetch products:', error);
   }
 
+  // HOT 상품 (메인 상단 노출)
+  const hotProducts = products?.filter((p) => p.is_hot).slice(0, 4) || [];
+  
+  // 신상품 (최근 등록순)
+  const newProducts = products?.slice(0, 8) || [];
+
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 via-white to-blue-50 py-16 sm:py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight">
-              일본 가서 사면<br />비행기 값 뽑습니다
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
-              우리가 대신 사다 드립니다.<br />
-              관부가세, 배송비 포함해도 <span className="font-bold text-green-600">최대 30% 저렴</span>
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
-                <div className="text-sm text-gray-500">평균 절약 금액</div>
-                <div className="text-2xl font-bold text-blue-600">150,000원</div>
-              </div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
-                <div className="text-sm text-gray-500">누적 주문</div>
-                <div className="text-2xl font-bold text-blue-600">1,234건</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-white">
+      {/* 히어로 배너 (롤링) */}
+      <HeroBanner />
 
-      {/* Category Filter */}
-      <section className="border-b border-gray-100 bg-white sticky top-16 sm:top-20 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-            {CATEGORIES.map((cat) => (
+      {/* 카테고리 섹션 */}
+      <CategorySection />
+
+      {/* HOT 신상품 섹션 */}
+      {hotProducts.length > 0 && (
+        <section className="py-12 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-1">🔥 지금 핫한 신상</h2>
+                <p className="text-sm text-gray-600">놓치면 후회할 인기 상품</p>
+              </div>
               <Link
-                key={cat.value}
-                href={`/?category=${cat.value}`}
-                className={`
-                  flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap
-                  transition-all
-                  ${
-                    category === cat.value
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }
-                `}
+                href="/?category=all"
+                className="text-sm font-medium text-gray-600 hover:text-gray-900"
               >
-                <span>{cat.emoji}</span>
-                <span>{cat.label}</span>
+                전체보기 →
               </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Product Grid */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          {!products || products.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-gray-500 text-lg">등록된 상품이 없습니다.</p>
-              <p className="text-gray-400 text-sm mt-2">관리자 페이지에서 상품을 추가해주세요.</p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product: Product) => {
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {hotProducts.map((product: Product) => {
                 const calculation = calculatePrice(
                   product.jp_price,
                   product.kr_price,
@@ -120,7 +81,7 @@ export default async function HomePage({
                   <Link
                     key={product.id}
                     href={`/product/${product.id}`}
-                    className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:border-gray-200 transition-all"
+                    className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all"
                   >
                     {/* 이미지 */}
                     <div className="relative aspect-square bg-gray-100">
@@ -139,45 +100,125 @@ export default async function HomePage({
                       
                       {/* 절약 배지 */}
                       {calculation.saved_amount > 0 && (
-                        <div className="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          {Math.round((calculation.saved_amount / product.kr_price) * 100)}% OFF
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 상품 정보 */}
+                    <div className="p-3">
+                      <div className="text-xs text-gray-500 mb-1">{product.brand}</div>
+                      <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-2 leading-tight">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-lg font-bold text-gray-900">
+                          {formatKRW(calculation.final_price)}
+                        </span>
+                      </div>
+                      {calculation.saved_amount > 0 && (
+                        <div className="text-xs text-red-600 font-medium mt-1">
+                          {formatKRW(calculation.saved_amount)} 절약
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 트렌드 섹션 (매거진 스타일) */}
+      <TrendSection />
+
+      {/* 긴 프로모션 배너 */}
+      <FullWidthBanner />
+
+      {/* 추천 상품 섹션 */}
+      {newProducts.length > 0 && (
+        <section className="py-12 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-1">✨ 추천 아이템</h2>
+                <p className="text-sm text-gray-600">Price Check가 엄선한 상품</p>
+              </div>
+              <Link
+                href="/?category=all"
+                className="text-sm font-medium text-gray-600 hover:text-gray-900"
+              >
+                전체보기 →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+              {newProducts.map((product: Product) => {
+                const calculation = calculatePrice(
+                  product.jp_price,
+                  product.kr_price,
+                  product.weight,
+                  settings
+                );
+
+                return (
+                  <Link
+                    key={product.id}
+                    href={`/product/${product.id}`}
+                    className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all"
+                  >
+                    {/* 이미지 */}
+                    <div className="relative aspect-square bg-gray-100">
+                      {product.image_url ? (
+                        <Image
+                          src={product.image_url}
+                          alt={product.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          No Image
+                        </div>
+                      )}
+                      
+                      {/* 절약 배지 */}
+                      {calculation.saved_amount > 0 && (
+                        <div className="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                           {Math.round((calculation.saved_amount / product.kr_price) * 100)}% SAVE
                         </div>
                       )}
 
                       {/* HOT 배지 */}
                       {product.is_hot && (
-                        <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                          🔥 HOT
+                        <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          HOT
                         </div>
                       )}
                     </div>
 
                     {/* 상품 정보 */}
-                    <div className="p-4 space-y-2">
-                      {/* 브랜드 */}
-                      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    <div className="p-3">
+                      <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
                         {product.brand}
                       </div>
-
-                      {/* 상품명 */}
-                      <h3 className="text-base font-semibold text-gray-900 line-clamp-2 leading-snug">
+                      <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-2 leading-tight">
                         {product.name}
                       </h3>
-
-                      {/* 가격 비교 */}
-                      <div className="pt-2 space-y-1">
+                      <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-400 line-through">
+                          <span className="text-xs text-gray-400 line-through">
                             {formatKRW(product.kr_price)}
                           </span>
-                          <span className="text-xs text-gray-500">국내가</span>
                         </div>
-                        <div className="text-2xl font-extrabold text-blue-600">
+                        <div className="text-lg font-bold text-gray-900">
                           {formatKRW(calculation.final_price)}
                         </div>
                         {calculation.saved_amount > 0 && (
-                          <div className="text-sm font-bold text-green-600">
-                            {formatKRW(calculation.saved_amount)} 저렴!
+                          <div className="text-xs text-green-600 font-medium">
+                            {formatKRW(calculation.saved_amount)} 이득
                           </div>
                         )}
                       </div>
@@ -186,9 +227,19 @@ export default async function HomePage({
                 );
               })}
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
+
+      {/* 상품 없을 때 */}
+      {(!products || products.length === 0) && (
+        <section className="py-20 bg-white">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-gray-500 text-lg mb-4">등록된 상품이 없습니다.</p>
+            <p className="text-gray-400 text-sm">관리자 페이지에서 상품을 추가해주세요.</p>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

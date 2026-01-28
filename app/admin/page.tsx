@@ -32,7 +32,8 @@ export default function AdminLoginPage() {
       }
 
       if (data.user) {
-        router.push('/admin/dashboard');
+        // 전체 페이지 리로드로 인증 상태 확실히 전파
+        window.location.href = '/admin/dashboard';
       }
     } catch (err) {
       console.error('Login error:', err);
