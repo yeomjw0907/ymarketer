@@ -1,3 +1,5 @@
+import FooterModal from '@/components/layout/FooterModal';
+
 export default function Footer() {
   return (
     <footer className="border-t border-gray-100 bg-gray-50 mt-20">
@@ -12,18 +14,8 @@ export default function Footer() {
             합리적인 직구를 도와드립니다.
           </p>
 
-          {/* 링크 */}
-          <div className="flex space-x-6 text-sm text-gray-500">
-            <a href="#" className="hover:text-gray-900 transition-colors">
-              이용약관
-            </a>
-            <a href="#" className="hover:text-gray-900 transition-colors">
-              개인정보처리방침
-            </a>
-            <a href="#" className="hover:text-gray-900 transition-colors">
-              고객센터
-            </a>
-          </div>
+          {/* 링크 - 클릭 시 모달 */}
+          <FooterModal />
 
           {/* 사업자 정보 (와이마케터) */}
           <div className="text-xs text-gray-400 space-y-1">

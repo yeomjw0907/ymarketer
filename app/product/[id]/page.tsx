@@ -4,9 +4,8 @@ import Link from 'next/link';
 import { ArrowLeft, Package, Truck, Shield } from 'lucide-react';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getGlobalSettings } from '@/lib/utils/settings';
-import { calculatePrice, formatKRW, formatJPY } from '@/lib/utils/calculator';
+import { calculatePrice, formatJPY } from '@/lib/utils/calculator';
 import PriceComparisonPanel from '@/components/product/PriceComparisonPanel';
-import OrderForm from '@/components/product/OrderForm';
 import ReviewSection from '@/components/product/ReviewSection';
 
 export default async function ProductDetailPage({
@@ -39,12 +38,6 @@ export default async function ProductDetailPage({
     product.weight,
     settings
   );
-
-  // 스크롤 이동 함수를 위한 클라이언트 컴포넌트는 별도로 분리
-  const scrollToOrder = () => {
-    const element = document.getElementById('order-form');
-    element?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -141,13 +134,13 @@ export default async function ProductDetailPage({
               yen_rate={settings.yen_rate}
             />
 
-            {/* CTA 버튼 (스크롤 이동) */}
-            <a
-              href="#order-form"
+            {/* CTA 버튼 → 주문 페이지 */}
+            <Link
+              href={`/order/new?productId=${product.id}`}
               className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg text-center shadow-lg active:scale-95 transition-all"
             >
-              🛒 구매대행 신청하기
-            </a>
+              구매하기
+            </Link>
           </div>
         </div>
 
@@ -163,26 +156,17 @@ export default async function ProductDetailPage({
           </div>
         )}
 
-        {/* 주문 폼 */}
-        <div className="mt-12">
-          <OrderForm
-            productId={product.id}
-            productName={product.name}
-            finalPrice={calculation.final_price}
-          />
-        </div>
-
         {/* 리뷰 섹션 */}
         <ReviewSection productId={product.id} />
 
-        {/* 하단 Sticky CTA (모바일) */}
+        {/* 하단 Sticky CTA (모바일) → 주문 페이지 */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur border-t border-gray-200 z-50">
-          <a
-            href="#order-form"
+          <Link
+            href={`/order/new?productId=${product.id}`}
             className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-lg text-center shadow-lg active:scale-95 transition-all"
           >
-            🛒 {formatKRW(calculation.final_price)} 신청하기
-          </a>
+            구매하기
+          </Link>
         </div>
       </div>
     </div>

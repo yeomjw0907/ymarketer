@@ -1,19 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock, User, Phone, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-
-declare global {
-  interface Window {
-    daum: any;
-  }
-}
+import AddressSearchModal from '@/components/signup/AddressSearchModal';
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '';
+  const loginUrl = redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')
+    ? `/login?redirect=${encodeURIComponent(redirectTo)}`
+    : '/login';
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -22,9 +22,12 @@ export default function SignupPage() {
     phone: '',
     address: '',
     addressDetail: '',
+    agreePrivacy: false,
+    agreeMarketing: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
 
   // 다음 우편번호 API 스크립트 로드
   useEffect(() => {
@@ -33,46 +36,34 @@ export default function SignupPage() {
     script.async = true;
     document.body.appendChild(script);
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 
-  const handleAddressSearch = () => {
-    if (!window.daum) {
-      alert('주소 검색 API를 로드하는 중입니다. 잠시 후 다시 시도해주세요.');
-      return;
-    }
-
-    new window.daum.Postcode({
-      oncomplete: function (data: any) {
-        let fullAddress = data.address;
-        let extraAddress = '';
-
-        if (data.addressType === 'R') {
-          if (data.bname !== '') {
-            extraAddress += data.bname;
-          }
-          if (data.buildingName !== '') {
-            extraAddress += extraAddress !== '' ? ', ' + data.buildingName : data.buildingName;
-          }
-          fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
-        }
-
-        setFormData((prev) => ({
-          ...prev,
-          address: fullAddress,
-        }));
-
-        // 상세주소 입력 포커스
-        document.getElementById('addressDetail')?.focus();
-      },
-    }).open();
+  const handleAddressSelect = (address: string) => {
+    setFormData((prev) => ({ ...prev, address }));
+    setAddressModalOpen(false);
+    setTimeout(() => document.getElementById('addressDetail')?.focus(), 100);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
+    if (!formData.agreePrivacy) {
+      setError('개인정보 처리방침에 동의해주세요.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.address && !formData.addressDetail.trim()) {
+      setError('상세 주소를 입력해주세요.');
+      setIsLoading(false);
+      return;
+    }
 
     // 비밀번호 확인
     if (formData.password !== formData.passwordConfirm) {
@@ -126,7 +117,7 @@ export default function SignupPage() {
 
         // 회원가입 성공
         alert('회원가입이 완료되었습니다! 로그인해주세요.');
-        router.push('/login');
+        router.push(loginUrl);
       }
     } catch (err) {
       console.error('Signup error:', err);
@@ -226,12 +217,12 @@ export default function SignupPage() {
                       value={formData.address}
                       placeholder="주소 검색"
                       className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 cursor-pointer"
-                      onClick={handleAddressSearch}
+                      onClick={() => window.daum ? setAddressModalOpen(true) : alert('주소 검색 API를 로드하는 중입니다. 잠시 후 다시 시도해주세요.')}
                     />
                   </div>
                   <button
                     type="button"
-                    onClick={handleAddressSearch}
+                    onClick={() => window.daum ? setAddressModalOpen(true) : alert('주소 검색 API를 로드하는 중입니다. 잠시 후 다시 시도해주세요.')}
                     className="px-4 py-3 bg-gray-700 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors whitespace-nowrap"
                   >
                     주소 검색
@@ -241,14 +232,21 @@ export default function SignupPage() {
                   <input
                     type="text"
                     id="addressDetail"
+                    required={!!formData.address}
                     value={formData.addressDetail}
                     onChange={(e) => setFormData({ ...formData, addressDetail: e.target.value })}
-                    placeholder="상세주소 (동/호수)"
+                    placeholder="상세주소를 입력해주세요 (동, 호수 등) *"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
                   />
                 )}
               </div>
             </div>
+
+            <AddressSearchModal
+              isOpen={addressModalOpen}
+              onClose={() => setAddressModalOpen(false)}
+              onSelect={handleAddressSelect}
+            />
 
             {/* 비밀번호 */}
             <div>
@@ -286,6 +284,32 @@ export default function SignupPage() {
                   placeholder="비밀번호를 다시 입력하세요"
                 />
               </div>
+            </div>
+
+            {/* 개인정보 처리방침 / 마케팅 동의 */}
+            <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={formData.agreePrivacy}
+                  onChange={(e) => setFormData({ ...formData, agreePrivacy: e.target.checked })}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">
+                  <span className="font-medium text-gray-900">개인정보 처리방침</span>에 동의합니다. <span className="text-red-500">*</span>
+                </span>
+              </label>
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={formData.agreeMarketing}
+                  onChange={(e) => setFormData({ ...formData, agreeMarketing: e.target.checked })}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">
+                  <span className="font-medium text-gray-900">마케팅 수신</span>에 동의합니다. (선택)
+                </span>
+              </label>
             </div>
 
             {/* 회원가입 버튼 */}

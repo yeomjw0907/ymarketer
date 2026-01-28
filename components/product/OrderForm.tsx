@@ -206,7 +206,6 @@ export default function OrderForm({ productId, productName, finalPrice }: OrderF
             <li>신청 후 입금 계좌를 문자로 보내드립니다.</li>
             <li>입금 확인 후 일본 현지에서 상품을 구매합니다.</li>
             <li>배송까지 평균 7~14일 소요됩니다.</li>
-            <li>회원가입 없이 주문 가능합니다.</li>
           </ul>
         </div>
 

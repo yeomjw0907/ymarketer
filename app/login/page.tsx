@@ -1,13 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
+  // open redirect 방지: 같은 출처 경로만 허용
+  const safeRedirect = redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/';
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,8 +37,8 @@ export default function LoginPage() {
       }
 
       if (data.user) {
-        // 로그인 성공 - 메인 페이지로 리다이렉트
-        window.location.href = '/';
+        // 로그인 성공 - redirect 파라미터 또는 메인으로
+        window.location.href = safeRedirect;
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -45,17 +49,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        {/* 헤더 */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">로그인</h1>
-          <p className="text-gray-600">ymarketer 계정으로 로그인하세요</p>
-        </div>
+    <>
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">로그인</h1>
+        <p className="text-gray-600">ymarketer 계정으로 로그인하세요</p>
+      </div>
 
-        {/* 로그인 폼 */}
-        <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-xl p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-xl p-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
             {/* 에러 메시지 */}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -127,9 +128,18 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
-        </div>
+      </div>
+    </>
+  );
+}
 
-        {/* 메인으로 돌아가기 */}
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <Suspense fallback={<div className="text-center text-gray-500">로딩 중...</div>}>
+          <LoginForm />
+        </Suspense>
         <div className="text-center mt-6">
           <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
             ← 메인 페이지로 돌아가기
