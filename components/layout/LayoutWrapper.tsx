@@ -13,10 +13,10 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
   
-  // 인트로 페이지에서는 Header, Footer, MobileBottomNav 숨김
-  const isIntroPage = pathname === '/';
+  // 인트로 페이지와 인증 페이지에서는 Header, Footer, MobileBottomNav 숨김
+  const hideLayout = pathname === '/' || pathname === '/auth';
   
-  if (isIntroPage) {
+  if (hideLayout) {
     return <>{children}</>;
   }
 
